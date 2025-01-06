@@ -4,6 +4,8 @@ A simple and fun REST API service written in Go that serves and stores dad
 jokes. The API allows you to fetch random dad jokes and submit new ones to the
 collection.
 
+[CHECK IT OUT HERE](https://dadjokes.developersandbox.xyz/api/v1/random)
+
 ## Features
 
 - Fetch random dad jokes
