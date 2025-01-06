@@ -1,6 +1,8 @@
 # Go Dad Jokes API
 
-A simple and fun REST API service written in Go that serves and stores dad jokes. The API allows you to fetch random dad jokes and submit new ones to the collection.
+A simple and fun REST API service written in Go that serves and stores dad
+jokes. The API allows you to fetch random dad jokes and submit new ones to the
+collection.
 
 ## Features
 
@@ -20,12 +22,14 @@ A simple and fun REST API service written in Go that serves and stores dad jokes
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/andrewthecodertx/go-dadjokes-api.git
 cd go-dadjokes-api
 ```
 
 2. Install dependencies:
+
 ```bash
 go mod init go-dadjokes-api
 go get github.com/gorilla/mux
@@ -34,11 +38,13 @@ go get github.com/go-sql-driver/mysql
 ```
 
 3. Create a `.env` file in the project root with your database configuration:
+
 ```env
 DB_CONN_STRING=user:password@tcp(localhost:3306)/database_name
 ```
 
 4. Set up the MySQL database:
+
 ```sql
 CREATE TABLE jokes (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,25 +57,26 @@ CREATE TABLE jokes (
 ## Running the Application
 
 ### Development
+
 ```bash
 go run main.go
 ```
+
 The server will start on port 8080.
 
 ### Production
+
 1. Build the binary:
+
 ```bash
 go build -o dadjokes-api
 ```
 
 2. Configure Nginx using the provided configuration:
+
 ```nginx
 server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    ssl_certificate /etc/letsencrypt/live/developersandbox.xyz/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/developersandbox.xyz/privkey.pem;
-    server_name dadjokes.developersandbox.xyz;
+    ...
 
     location /api/v1/random {
         proxy_pass http://localhost:8080/random;
@@ -93,11 +100,13 @@ server {
 ## API Endpoints
 
 ### Get Random Joke
+
 ```http
 GET /api/v1/random
 ```
 
 Response:
+
 ```json
 {
     "id": 1,
@@ -108,6 +117,7 @@ Response:
 ```
 
 ### Submit New Joke
+
 ```http
 POST /api/v1/submit
 Content-Type: application/json
@@ -119,6 +129,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
     "id": 2,
