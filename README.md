@@ -4,7 +4,7 @@ A simple and fun REST API service written in Go that serves and stores dad
 jokes. The API allows you to fetch random dad jokes and submit new ones to the
 collection.
 
-[CHECK IT OUT HERE](https://dadjokes.developersandbox.xyz/api/v1/random)
+[CHECK IT OUT HERE](https://dadjokes.developersandbox.xyz/api/v2/random)
 
 ## Features
 
@@ -30,7 +30,7 @@ git clone https://github.com/andrewthecodertx/go-dadjokes-api.git
 cd go-dadjokes-api
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 go mod init go-dadjokes-api
@@ -39,13 +39,13 @@ go get github.com/joho/godotenv
 go get github.com/lib/pq
 ```
 
-3. Create a `.env` file in the project root with your database configuration:
+1. Create a `.env` file in the project root with your database configuration:
 
 ```env
 DB_CONN_STRING="postgres://user:password@host:5432/database_name?sslmode=disable"
 ```
 
-4. Set up the PostgreSQL database:
+1. Set up the PostgreSQL database:
 
 ```sql
 CREATE TABLE jokes (
