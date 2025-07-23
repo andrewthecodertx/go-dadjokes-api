@@ -58,10 +58,10 @@
         <div class="endpoint">
             <h3>Get Random Joke</h3>
             <p>Retrieve a random dad joke from the database.</p>
-            <p><span class="method">GET</span> <code>/random</code></p>
+            <p><span class="method">GET</span> <code>/api/v2/random</code></p>
 
             <h4>Example Request (using curl):</h4>
-            <pre><code>curl http://localhost:3000/random</code></pre>
+            <pre><code>curl https://dadjokes.developersandbox/api/v2/random</code></pre>
 
             <h4>Example Success Response (JSON):</h4>
             <pre><code>{
@@ -80,7 +80,7 @@
         <div class="endpoint">
             <h3>Submit New Joke</h3>
             <p>Submit a new dad joke to the database.</p>
-            <p><span class="method post-method">POST</span> <code>/write</code></p>
+            <p><span class="method post-method">POST</span> <code>/api/v2/submit</code></p>
             <p><strong>Content-Type:</strong> <code>application/json</code></p>
 
             <h4>Example Request Body (JSON):</h4>
@@ -93,7 +93,7 @@
             <pre><code>curl -X POST -H "Content-Type: application/json" -d '{
     "author": "Jane Doe",
     "joke_text": "Why don't programmers like nature? It has too many bugs!"
-}' http://localhost:3000/write</code></pre>
+}' https://dadjokes.developersandbox/api/v2/submit</code></pre>
 
             <h4>Example Success Response (JSON):</h4>
             <pre><code>{
