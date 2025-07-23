@@ -26,14 +26,20 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    - name: Stop service
+      run: |
+        sshpass ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@172.234.213.121 <<'ENDSSH'
+        echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl stop dadjokes-api || true
+        ENDSSH
+
     - name: Copy files
       run: |
         scp -o StrictHostKeyChecking=no ./dadjokes ${{ secrets.SERVER_USERNAME }}@172.234.213.121:/opt/dadjokes-api/
         scp -o StrictHostKeyChecking=no ./api_instructions.html ${{ secrets.SERVER_USERNAME }}@172.234.213.121:/var/www/developersandbox_xyz/dadjokes/
 
-    - name: Send commands via SSHPASS
+    - name: Restart service
       run: |
         sshpass ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@172.234.213.121 <<'ENDSSH'
-        echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl restart dadjokes-api || true
+        echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl start dadjokes-api || true
         ENDSSH
 
