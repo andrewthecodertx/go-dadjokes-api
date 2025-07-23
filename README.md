@@ -10,14 +10,14 @@ collection.
 
 - Fetch random dad jokes
 - Submit new dad jokes
-- MySQL database integration
+- PostgreSQL database integration
 - Secure HTTPS support via Nginx
 - Environment-based configuration
 
 ## Prerequisites
 
 - Go 1.x or higher
-- MySQL database
+- PostgreSQL database
 - Nginx (for production deployment)
 - Let's Encrypt SSL certificates (for HTTPS)
 
@@ -36,20 +36,20 @@ cd go-dadjokes-api
 go mod init go-dadjokes-api
 go get github.com/gorilla/mux
 go get github.com/joho/godotenv
-go get github.com/go-sql-driver/mysql
+go get github.com/lib/pq
 ```
 
 3. Create a `.env` file in the project root with your database configuration:
 
 ```env
-DB_CONN_STRING=user:password@tcp(localhost:3306)/database_name
+DB_CONN_STRING="postgres://user:password@host:5432/database_name?sslmode=disable"
 ```
 
-4. Set up the MySQL database:
+4. Set up the PostgreSQL database:
 
 ```sql
 CREATE TABLE jokes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     entry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     author VARCHAR(255),
     joke_text TEXT
@@ -64,7 +64,7 @@ CREATE TABLE jokes (
 go run main.go
 ```
 
-The server will start on port 8080.
+The server will start on port 3000.
 
 ### Production
 
@@ -163,4 +163,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - Thanks to all contributors who add their dad jokes
-- Built with Go, MySQL, and Nginx
+- Built with Go, PostgreSQL, and Nginx
