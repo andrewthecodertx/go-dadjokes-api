@@ -37,10 +37,10 @@ jobs:
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl stop dadjokes-api.service || true
 
           # Transfer the new executable
-          scp -o StrictHostKeyChecking=no ./dadjokes /opt/dadjokes-api/
+          scp -o StrictHostKeyChecking=no dadjokes /opt/dadjokes-api/
 
           # Transfer the HTML instructions file
-          scp -o StrictHostKeyChecking=no ./api_instructions.html /var/www/developersandbox_xyz/dadjokes/
+          scp -o StrictHostKeyChecking=no api_instructions.html /var/www/developersandbox_xyz/dadjokes/
 
           # Start the systemd service
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl start dadjokes-api.service
