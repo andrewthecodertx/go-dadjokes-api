@@ -11,6 +11,7 @@ collection.
 - Fetch random dad jokes
 - Submit new dad jokes
 - IP-based rate limiting for POST requests
+- Input validation for joke submission
 - PostgreSQL database integration
 - Secure HTTPS support via Nginx
 - Environment-based configuration
