@@ -38,25 +38,25 @@ jobs:
           APP_NAME="dadjokes"
 
           # Ensure the target directory exists
-          sudo mkdir -p $TARGET_DIR
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p $TARGET_DIR
 
           # Stop the systemd service
-          sudo systemctl stop dadjokes-api.service || true
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl stop dadjokes-api.service || true
 
           # Transfer the new executable
           scp -o StrictHostKeyChecking=no ./$APP_NAME $TARGET_DIR/$APP_NAME
 
           # Make the executable runnable
-          sudo chmod +x $TARGET_DIR/$APP_NAME
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S chmod +x $TARGET_DIR/$APP_NAME
 
           # Ensure the HTML directory exists
-          sudo mkdir -p /var/www/developersandbox_xyz/dadjokes
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p /var/www/developersandbox_xyz/dadjokes
 
           # Transfer the HTML instructions file
           scp -o StrictHostKeyChecking=no ./api_instructions.html /var/www/developersandbox_xyz/dadjokes/api_instructions.html
 
           # Start the systemd service
-          sudo systemctl start dadjokes-api.service
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl start dadjokes-api.service
 
           echo "Deployment complete. Application and HTML instructions should be running."
 
