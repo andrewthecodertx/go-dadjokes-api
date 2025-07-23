@@ -33,61 +33,30 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          # Define target directory from secrets
-          TARGET_DIR="${{ secrets.SERVER_TARGET_DIR }}"
+          # Define target directory and app name
+          TARGET_DIR="/opt/dadjokes-api"
           APP_NAME="dadjokes"
 
-          # Stop the running application if it exists (adjust as needed for your setup)
-          # For a simple process:
-          pkill -f $APP_NAME || true
+          # Ensure the target directory exists
+          sudo mkdir -p $TARGET_DIR
 
-          # For a systemd service (recommended for production):
-          # sudo systemctl stop $APP_NAME.service || true
+          # Stop the systemd service
+          sudo systemctl stop dadjokes-api.service || true
 
           # Transfer the new executable
           scp -o StrictHostKeyChecking=no ./$APP_NAME $TARGET_DIR/$APP_NAME
 
           # Make the executable runnable
-          chmod +x $TARGET_DIR/$APP_NAME
+          sudo chmod +x $TARGET_DIR/$APP_NAME
+
+          # Ensure the HTML directory exists
+          sudo mkdir -p /var/www/developersandbox_xyz/dadjokes
 
           # Transfer the HTML instructions file
-          scp -o StrictHostKeyChecking=no ./api_instructions.html /var/www/developersandbox_xyz/dadjokes/index.html
+          scp -o StrictHostKeyChecking=no ./api_instructions.html /var/www/developersandbox_xyz/dadjokes/api_instructions.html
 
-          # Start the application (adjust as needed for your setup)
-          # For a simple background process:
-          nohup $TARGET_DIR/$APP_NAME > /dev/null 2>&1 < /dev/null &
-
-          # For a systemd service (recommended for production):
-          # sudo systemctl start $APP_NAME.service
+          # Start the systemd service
+          sudo systemctl start dadjokes-api.service
 
           echo "Deployment complete. Application and HTML instructions should be running."
 
-# Important:
-# 1. Go to your GitHub repository -> Settings -> Secrets and variables -> Actions
-# 2. Add a new repository secret named SSH_PRIVATE_KEY with your server's SSH private key.
-# 3. Add a new repository secret named SERVER_USERNAME with the username for SSH on your server (e.g., ubuntu, admin).
-# 4. Add a new repository secret named SERVER_TARGET_DIR with the absolute path where you want to deploy the application on the server (e.g., /opt/dadjokes-api).
-#
-# For production, consider creating a systemd service for your application on the server.
-# Example systemd service file (e.g., /etc/systemd/system/dadjokes-api.service):
-# [Unit]
-# Description=Dad Jokes API Service
-# After=network.target
-#
-# [Service]
-# User=your_ssh_username
-# WorkingDirectory=/opt/dadjokes-api
-# ExecStart=/opt/dadjokes-api/dadjokes-api
-# Restart=always
-#
-# [Install]
-# WantedBy=multi-user.target
-#
-# After creating the service file:
-# sudo systemctl daemon-reload
-# sudo systemctl enable dadjokes-api.service
-# sudo systemctl start dadjokes-api.service
-#
-# Then, in the GitHub Actions workflow, you would use:
-# sudo systemctl stop $APP_NAME.service || true
-# sudo systemctl start $APP_NAME.service
