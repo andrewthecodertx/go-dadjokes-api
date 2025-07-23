@@ -140,6 +140,28 @@ func saveJoke(db *sql.DB, response http.ResponseWriter, request *http.Request) {
         return
     }
 
+    // Input validation
+    if joke.Author == "" {
+        response.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(response).Encode(map[string]string{"message": "Author cannot be empty."})
+        return
+    }
+    if len(joke.Author) > 255 {
+        response.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(response).Encode(map[string]string{"message": "Author exceeds maximum length of 255 characters."})
+        return
+    }
+    if joke.Text == "" {
+        response.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(response).Encode(map[string]string{"message": "Joke text cannot be empty."})
+        return
+    }
+    if len(joke.Text) > 2000 {
+        response.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(response).Encode(map[string]string{"message": "Joke text exceeds maximum length of 2000 characters."})
+        return
+    }
+
     _, err = db.Exec("INSERT INTO jokes (author, joke_text) VALUES ($1, $2)", joke.Author, joke.Text)
     if err != nil {
         response.WriteHeader(http.StatusInternalServerError)
