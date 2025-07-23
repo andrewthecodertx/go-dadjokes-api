@@ -9,7 +9,7 @@ import (
 
     "github.com/gorilla/mux"
     "github.com/joho/godotenv"
-    _ "github.com/go-sql-driver/mysql"
+    _ "github.com/lib/pq"
 )
 
 type Joke struct {
@@ -27,7 +27,7 @@ func main() {
         log.Fatalf("Error loading .env file")
     }
 
-    db, err = sql.Open("mysql", os.Getenv("DB_CONN_STRING"))
+    db, err = sql.Open("postgres", os.Getenv("DB_CONN_STRING"))
     if err != nil {
         log.Fatalf("Error opening database: %v", err)
     }
@@ -35,16 +35,21 @@ func main() {
 
     router := mux.NewRouter()
 
-    router.HandleFunc("/random", getRandomJoke).Methods("GET")
+    router.HandleFunc("/random", getJoke).Methods("GET")
     router.HandleFunc("/write", saveJoke).Methods("POST")
 
-    log.Fatal(http.ListenAndServe(":8080", router))
+    log.Fatal(http.ListenAndServe(":3000", router))
 }
 
-func getRandomJoke(response http.ResponseWriter, request *http.Request) {
+func getJoke(response http.ResponseWriter, request *http.Request) {
     var joke Joke
-    err := db.QueryRow("SELECT id, entry_date, author, joke_text FROM jokes ORDER BY RAND() LIMIT 1").Scan(&joke.Id, &joke.Date, &joke.Author, &joke.Text)
+    err := db.QueryRow("SELECT id, entry_date, author, joke_text FROM jokes ORDER BY RANDOM() LIMIT 1").Scan(&joke.Id, &joke.Date, &joke.Author, &joke.Text)
     if err != nil {
+        if err == sql.ErrNoRows {
+            response.WriteHeader(http.StatusNotFound)
+            json.NewEncoder(response).Encode(map[string]string{"message": "No jokes found in the database."})
+            return
+        }
         http.Error(response, err.Error(), http.StatusInternalServerError)
         return
     }
@@ -61,7 +66,7 @@ func saveJoke(response http.ResponseWriter, request *http.Request) {
         return
     }
 
-    _, err = db.Exec("INSERT INTO jokes (author, joke_text) VALUES (?, ?)", joke.Author, joke.Text)
+    _, err = db.Exec("INSERT INTO jokes (author, joke_text) VALUES ($1, $2)", joke.Author, joke.Text)
     if err != nil {
         http.Error(response, err.Error(), http.StatusInternalServerError)
         return
