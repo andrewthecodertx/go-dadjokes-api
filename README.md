@@ -80,14 +80,14 @@ go build -o dadjokes-api
 server {
     ...
 
-    location /api/v1/random {
+    location /api/v2/random {
         proxy_pass http://localhost:8080/random;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    location /api/v1/submit {
+    location /api/v2/submit {
         proxy_pass http://localhost:8080/write;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -104,7 +104,7 @@ server {
 ### Get Random Joke
 
 ```http
-GET /api/v1/random
+GET /api/v2/random
 ```
 
 Response:
@@ -121,7 +121,7 @@ Response:
 ### Submit New Joke
 
 ```http
-POST /api/v1/submit
+POST /api/v2/submit
 Content-Type: application/json
 
 {
