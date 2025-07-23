@@ -10,6 +10,7 @@ collection.
 
 - Fetch random dad jokes
 - Submit new dad jokes
+- IP-based rate limiting for POST requests
 - PostgreSQL database integration
 - Secure HTTPS support via Nginx
 - Environment-based configuration
