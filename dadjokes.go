@@ -122,8 +122,9 @@ func getJoke(db *sql.DB, response http.ResponseWriter, request *http.Request) {
             json.NewEncoder(response).Encode(map[string]string{"message": "No jokes found in the database."})
             return
         }
+        log.Printf("Error getting joke: %v", err)
         response.WriteHeader(http.StatusInternalServerError)
-        json.NewEncoder(response).Encode(map[string]string{"message": err.Error()})
+        json.NewEncoder(response).Encode(map[string]string{"message": "An internal server error occurred."})
         return
     }
 
@@ -164,8 +165,9 @@ func saveJoke(db *sql.DB, response http.ResponseWriter, request *http.Request) {
 
     _, err = db.Exec("INSERT INTO jokes (author, joke_text) VALUES ($1, $2)", joke.Author, joke.Text)
     if err != nil {
+        log.Printf("Error saving joke: %v", err)
         response.WriteHeader(http.StatusInternalServerError)
-        json.NewEncoder(response).Encode(map[string]string{"message": err.Error()})
+        json.NewEncoder(response).Encode(map[string]string{"message": "An internal server error occurred."})
         return
     }
 

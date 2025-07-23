@@ -105,6 +105,17 @@ func TestGetJoke(t *testing.T) {
 			status, http.StatusInternalServerError)
 	}
 
+	expectedErrorResponse = map[string]string{"message": "An internal server error occurred."}
+	actualErrorResponse = make(map[string]string)
+	err = json.NewDecoder(rr.Body).Decode(&actualErrorResponse)
+	if err != nil {
+		t.Fatalf("could not decode error response: %v", err)
+	}
+	if actualErrorResponse["message"] != expectedErrorResponse["message"] {
+		t.Errorf("handler returned unexpected error message: got %v want %v",
+			actualErrorResponse["message"], expectedErrorResponse["message"])
+	}
+
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
@@ -188,6 +199,17 @@ func TestSaveJoke(t *testing.T) {
 	if status := rr.Code; status != http.StatusInternalServerError {
 		t.Errorf("handler returned wrong status code for database insert error: got %v want %v",
 			status, http.StatusInternalServerError)
+	}
+
+	expectedErrorResponse := map[string]string{"message": "An internal server error occurred."}
+	var actualErrorResponse map[string]string
+	err = json.NewDecoder(rr.Body).Decode(&actualErrorResponse)
+	if err != nil {
+		t.Fatalf("could not decode error response: %v", err)
+	}
+	if actualErrorResponse["message"] != expectedErrorResponse["message"] {
+		t.Errorf("handler returned unexpected error message: got %v want %v",
+			actualErrorResponse["message"], expectedErrorResponse["message"])
 	}
 
 	if err := mock.ExpectationsWereMet(); err != nil {
