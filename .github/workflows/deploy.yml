@@ -55,7 +55,7 @@ jobs:
 
           # Start the application (adjust as needed for your setup)
           # For a simple background process:
-          nohup $TARGET_DIR/$APP_NAME &>/dev/null &
+          nohup $TARGET_DIR/$APP_NAME > /dev/null 2>&1 < /dev/null &
 
           # For a systemd service (recommended for production):
           # sudo systemctl start $APP_NAME.service
