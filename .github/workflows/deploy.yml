@@ -29,7 +29,7 @@ jobs:
     - name: Deploy and Run on Server
       uses: appleboy/ssh-action@master
       with:
-        host: 172.234.213.12
+        host: 172.234.213.121
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
