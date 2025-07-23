@@ -21,29 +21,19 @@ jobs:
     - name: Build application
       run: go build -o dadjokes .
 
-    - name: Set up SSH agent
+    - name: Set up SSH
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Deploy and Run on Server
-      uses: appleboy/ssh-action@master
-      with:
-        host: 172.234.213.121
-        username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          # Stop the systemd service
-          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl stop dadjokes-api.service || true
+    - name: Copy files
+        run: |
+          scp -o StrictHostKeyChecking=no ./dadjokes ${{ secrets.SERVER_USERNAME }}@172.234.213.121:/opt/dadjokes-api/
+          scp -o StrictHostKeyChecking=no ./api_instructions.html ${{ secrets.SERVER_USERNAME }}@172.234.213.121:/var/www/developersandbox_xyz/dadjokes/
 
-          # Transfer the new executable
-          scp -o StrictHostKeyChecking=no dadjokes /opt/dadjokes-api/
-
-          # Transfer the HTML instructions file
-          scp -o StrictHostKeyChecking=no api_instructions.html /var/www/developersandbox_xyz/dadjokes/
-
-          # Start the systemd service
-          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl start dadjokes-api.service
-
-          echo "Deployment complete. Application and HTML instructions should be running."
+    - name: Send commands via SSHPASS
+        run: |
+          sshpass ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@172.234.213.121 <<'ENDSSH'
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl restart dadjokes-api || true
+          ENDSSH
 
