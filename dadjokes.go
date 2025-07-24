@@ -24,7 +24,6 @@ type Joke struct {
 
 // Create a custom visitor struct which holds the rate limiter for each
 // visitor and the last time that the visitor was seen.
-
 type visitor struct {
 	limiter  *rate.Limiter
 	lastSeen time.Time
@@ -114,64 +113,64 @@ func rateLimitMiddleware(next http.Handler) http.Handler {
 }
 
 func getJoke(db *sql.DB, response http.ResponseWriter, request *http.Request) {
-    var joke Joke
-    err := db.QueryRow("SELECT id, entry_date, author, joke_text FROM jokes ORDER BY RANDOM() LIMIT 1").Scan(&joke.Id, &joke.Date, &joke.Author, &joke.Text)
-    if err != nil {
-        if err == sql.ErrNoRows {
-            response.WriteHeader(http.StatusNotFound)
-            json.NewEncoder(response).Encode(map[string]string{"message": "No jokes found in the database."})
-            return
-        }
-        log.Printf("Error getting joke: %v", err)
-        response.WriteHeader(http.StatusInternalServerError)
-        json.NewEncoder(response).Encode(map[string]string{"message": "An internal server error occurred."})
-        return
-    }
+	var joke Joke
+	err := db.QueryRow("SELECT id, entry_date, author, joke_text FROM jokes ORDER BY RANDOM() LIMIT 1").Scan(&joke.Id, &joke.Date, &joke.Author, &joke.Text)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			response.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(response).Encode(map[string]string{"message": "No jokes found in the database."})
+			return
+		}
+		log.Printf("Error getting joke: %v", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(response).Encode(map[string]string{"message": "An internal server error occurred."})
+		return
+	}
 
-    response.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(response).Encode(joke)
+	response.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(response).Encode(joke)
 }
 
 func saveJoke(db *sql.DB, response http.ResponseWriter, request *http.Request) {
-    var joke Joke
-    err := json.NewDecoder(request.Body).Decode(&joke)
-    if err != nil {
-        response.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(response).Encode(map[string]string{"message": err.Error()})
-        return
-    }
+	var joke Joke
+	err := json.NewDecoder(request.Body).Decode(&joke)
+	if err != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(response).Encode(map[string]string{"message": err.Error()})
+		return
+	}
 
-    // Input validation
-    if joke.Author == "" {
-        response.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(response).Encode(map[string]string{"message": "Author cannot be empty."})
-        return
-    }
-    if len(joke.Author) > 255 {
-        response.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(response).Encode(map[string]string{"message": "Author exceeds maximum length of 255 characters."})
-        return
-    }
-    if joke.Text == "" {
-        response.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(response).Encode(map[string]string{"message": "Joke text cannot be empty."})
-        return
-    }
-    if len(joke.Text) > 2000 {
-        response.WriteHeader(http.StatusBadRequest)
-        json.NewEncoder(response).Encode(map[string]string{"message": "Joke text exceeds maximum length of 2000 characters."})
-        return
-    }
+	// Input validation
+	if joke.Author == "" {
+		response.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(response).Encode(map[string]string{"message": "Author cannot be empty."})
+		return
+	}
+	if len(joke.Author) > 255 {
+		response.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(response).Encode(map[string]string{"message": "Author exceeds maximum length of 255 characters."})
+		return
+	}
+	if joke.Text == "" {
+		response.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(response).Encode(map[string]string{"message": "Joke text cannot be empty."})
+		return
+	}
+	if len(joke.Text) > 2000 {
+		response.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(response).Encode(map[string]string{"message": "Joke text exceeds maximum length of 2000 characters."})
+		return
+	}
 
-    _, err = db.Exec("INSERT INTO jokes (author, joke_text) VALUES ($1, $2)", joke.Author, joke.Text)
-    if err != nil {
-        log.Printf("Error saving joke: %v", err)
-        response.WriteHeader(http.StatusInternalServerError)
-        json.NewEncoder(response).Encode(map[string]string{"message": "An internal server error occurred."})
-        return
-    }
+	_, err = db.Exec("INSERT INTO jokes (author, joke_text) VALUES ($1, $2)", joke.Author, joke.Text)
+	if err != nil {
+		log.Printf("Error saving joke: %v", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(response).Encode(map[string]string{"message": "An internal server error occurred."})
+		return
+	}
 
-    response.WriteHeader(http.StatusCreated)
-    response.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(response).Encode(joke)
+	response.WriteHeader(http.StatusCreated)
+	response.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(response).Encode(joke)
 }
