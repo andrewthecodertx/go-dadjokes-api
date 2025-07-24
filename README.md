@@ -147,8 +147,12 @@ Response:
 
 - The API uses HTTPS encryption in production
 - Nginx acts as a reverse proxy
-- Database credentials are stored in environment variables
-- Input validation should be implemented before production use
+- Database credentials are stored in environment variables (use a dedicated, least-privilege user in production)
+- Input validation is implemented for joke submission
+- IP-based rate limiting is implemented for POST requests
+- Generic error messages are returned to clients to prevent sensitive information leakage, with detailed errors logged internally
+- HTTP Security Headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Strict-Transport-Security) are recommended for Nginx configuration
+- Regular dependency updates and vulnerability scanning (e.g., using `govulncheck`) are crucial for maintaining security
 
 ## Contributing
 
