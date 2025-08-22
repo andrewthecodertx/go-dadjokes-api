@@ -38,7 +38,7 @@ func main() {
     router.HandleFunc("/random", getRandomJoke).Methods("GET")
     router.HandleFunc("/write", saveJoke).Methods("POST")
 
-    log.Fatal(http.ListenAndServe(":8080", router))
+    log.Fatal(http.ListenAndServe(":3000", router))
 }
 
 func getRandomJoke(response http.ResponseWriter, request *http.Request) {
