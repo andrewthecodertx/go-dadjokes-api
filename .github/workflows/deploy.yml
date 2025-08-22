@@ -1,0 +1,45 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24.5'
+
+    - name: Build application
+      run: go build -o dadjokes .
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Stop service
+      run: |
+        sshpass ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SSH_HOST }} <<'ENDSSH'
+        echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl stop dadjokes-api || true
+        ENDSSH
+
+    - name: Copy files
+      run: |
+        scp -o StrictHostKeyChecking=no ./dadjokes ${{ secrets.SERVER_USERNAME }}@${{ secrets.SSH_HOST }}:/opt/dadjokes-api/
+        scp -o StrictHostKeyChecking=no ./api_instructions.html ${{ secrets.SERVER_USERNAME }}@${{ secrets.SSH_HOST }}:/var/www/developersandbox_xyz/dadjokes/
+
+    - name: Restart service
+      run: |
+        sshpass ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@172.234.213.121 <<'ENDSSH'
+        echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl start dadjokes-api || true
+        ENDSSH
+

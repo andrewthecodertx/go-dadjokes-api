@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dad Jokes API Instructions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        pre {
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: "Courier New", Courier, monospace;
+            color: #d14;
+        }
+        .endpoint {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .method {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .post-method {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dad Jokes API Instructions</h1>
+        <p>This document provides instructions on how to use the Dad Jokes API.</p>
+
+        <h2>API Endpoints</h2>
+
+        <div class="endpoint">
+            <h3>Get Random Joke</h3>
+            <p>Retrieve a random dad joke from the database.</p>
+            <p><span class="method">GET</span> <code>/api/v2/random</code></p>
+
+            <h4>Example Request (using curl):</h4>
+            <pre><code>curl https://dadjokes.developersandbox/api/v2/random</code></pre>
+
+            <h4>Example Success Response (JSON):</h4>
+            <pre><code>{
+    "id": 1,
+    "entry_date": "2024-01-06T12:00:00Z",
+    "author": "John Doe",
+    "joke_text": "Why don't eggs tell jokes? They'd crack up!"
+}</code></pre>
+
+            <h4>Example Empty Table Response (JSON):</h4>
+            <pre><code>{
+    "message": "No jokes found in the database."
+}</code></pre>
+        </div>
+
+        <div class="endpoint">
+            <h3>Submit New Joke</h3>
+            <p>Submit a new dad joke to the database.</p>
+            <p><span class="method post-method">POST</span> <code>/api/v2/submit</code></p>
+            <p><strong>Content-Type:</strong> <code>application/json</code></p>
+
+            <h4>Example Request Body (JSON):</h4>
+            <pre><code>{
+    "author": "Jane Doe",
+    "joke_text": "Why don't programmers like nature? It has too many bugs!"
+}</code></pre>
+
+            <h4>Example Request (using curl):</h4>
+            <pre><code>curl -X POST -H "Content-Type: application/json" -d '{
+    "author": "Jane Doe",
+    "joke_text": "Why don't programmers like nature? It has too many bugs!"
+}' https://dadjokes.developersandbox/api/v2/submit</code></pre>
+
+            <h4>Example Success Response (JSON):</h4>
+            <pre><code>{
+    "id": 2,
+    "entry_date": "2024-01-06T12:01:00Z",
+    "author": "Jane Doe",
+    "joke_text": "Why don't programmers like nature? It has too many bugs!"
+}</code></pre>
+        </div>
+
+        <h2>Source Code</h2>
+        <p>The source code for this API can be found on GitHub: <a href="https://github.com/andrewthecodertx/go-dadjokes-api" target="_blank">https://github.com/andrewthecodertx/go-dadjokes-api</a></p>
+    </div>
+</body>
+</html>

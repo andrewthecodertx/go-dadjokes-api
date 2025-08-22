@@ -4,20 +4,22 @@ A simple and fun REST API service written in Go that serves and stores dad
 jokes. The API allows you to fetch random dad jokes and submit new ones to the
 collection.
 
-[CHECK IT OUT HERE](https://dadjokes.developersandbox.xyz/api/v1/random)
+[CHECK IT OUT HERE](https://dadjokes.developersandbox.xyz/api/v2/random)
 
 ## Features
 
 - Fetch random dad jokes
 - Submit new dad jokes
-- MySQL database integration
+- IP-based rate limiting for POST requests
+- Input validation for joke submission
+- PostgreSQL database integration
 - Secure HTTPS support via Nginx
 - Environment-based configuration
 
 ## Prerequisites
 
 - Go 1.x or higher
-- MySQL database
+- PostgreSQL database
 - Nginx (for production deployment)
 - Let's Encrypt SSL certificates (for HTTPS)
 
@@ -30,26 +32,26 @@ git clone https://github.com/andrewthecodertx/go-dadjokes-api.git
 cd go-dadjokes-api
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 go mod init go-dadjokes-api
 go get github.com/gorilla/mux
 go get github.com/joho/godotenv
-go get github.com/go-sql-driver/mysql
+go get github.com/lib/pq
 ```
 
-3. Create a `.env` file in the project root with your database configuration:
+1. Create a `.env` file in the project root with your database configuration:
 
 ```env
-DB_CONN_STRING=user:password@tcp(localhost:3306)/database_name
+DB_CONN_STRING="postgres://user:password@host:5432/database_name?sslmode=disable"
 ```
 
-4. Set up the MySQL database:
+1. Set up the PostgreSQL database:
 
 ```sql
 CREATE TABLE jokes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     entry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     author VARCHAR(255),
     joke_text TEXT
@@ -64,7 +66,7 @@ CREATE TABLE jokes (
 go run main.go
 ```
 
-The server will start on port 8080.
+The server will start on port 3000.
 
 ### Production
 
@@ -80,14 +82,14 @@ go build -o dadjokes-api
 server {
     ...
 
-    location /api/v1/random {
+    location /api/v2/random {
         proxy_pass http://localhost:8080/random;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    location /api/v1/submit {
+    location /api/v2/submit {
         proxy_pass http://localhost:8080/write;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -104,7 +106,7 @@ server {
 ### Get Random Joke
 
 ```http
-GET /api/v1/random
+GET /api/v2/random
 ```
 
 Response:
@@ -121,7 +123,7 @@ Response:
 ### Submit New Joke
 
 ```http
-POST /api/v1/submit
+POST /api/v2/submit
 Content-Type: application/json
 
 {
@@ -145,8 +147,12 @@ Response:
 
 - The API uses HTTPS encryption in production
 - Nginx acts as a reverse proxy
-- Database credentials are stored in environment variables
-- Input validation should be implemented before production use
+- Database credentials are stored in environment variables (use a dedicated, least-privilege user in production)
+- Input validation is implemented for joke submission
+- IP-based rate limiting is implemented for POST requests
+- Generic error messages are returned to clients to prevent sensitive information leakage, with detailed errors logged internally
+- HTTP Security Headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Strict-Transport-Security) are recommended for Nginx configuration
+- Regular dependency updates and vulnerability scanning (e.g., using `govulncheck`) are crucial for maintaining security
 
 ## Contributing
 
@@ -163,4 +169,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - Thanks to all contributors who add their dad jokes
-- Built with Go, MySQL, and Nginx
+- Built with Go, PostgreSQL, and Nginx
